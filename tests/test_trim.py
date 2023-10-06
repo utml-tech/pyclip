@@ -8,6 +8,7 @@ References:
 
 import pyclip
 from pyclip import Trim
+
 import pytest
 
 @pytest.fixture
