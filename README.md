@@ -1,6 +1,6 @@
 # PyClip
 
-TODO: fill this file
+TODO: fill this file.
 
 ## TODOs
 
