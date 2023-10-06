@@ -5,10 +5,10 @@ class Model:
 
 class Video(Model):
 
-    def trim(self, t_start: float, t_end: float | None = None, unit: str = "s") -> Video:
+    def trim(self, start: float, end: float | None = None, unit: str = "ms") -> Video:
         """
         Returns a clip playing the content of the current clip
-        between times ``t_start`` and ``t_end``
+        between times `start` and `end`
         """
         ...
 
@@ -19,4 +19,10 @@ class Video(Model):
         ...
 
     def upscale(self, **kwargs):
+        ...
+
+    def rand(self):
+        ...
+
+    def save(self, path: str | Path):
         ...

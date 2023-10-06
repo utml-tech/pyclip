@@ -14,7 +14,7 @@ import pytest
 @pytest.fixture
 def mock_video() -> pyclip.Video:
     """Fixture to generate a mock video for testing."""
-    return pyclip.RandomVideo()
+    return pyclip.Video.rand()
 
 def test_trim(mock_video: pyclip.Video):
     """Test trimming a video using seconds as unit."""
