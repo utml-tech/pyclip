@@ -6,8 +6,8 @@ References:
 
 """
 
-import src as pyclip
-from src import Trim
+import pyclip
+from pyclip import Trim
 import pytest
 
 @pytest.fixture
