@@ -15,10 +15,6 @@ def mock_video() -> pyclip.Video:
     """Fixture to generate a mock video for testing."""
     return pyclip.RandomVideo()
 
-def test_sanity():
-    """Test sanity check."""
-    assert 1 == 1
-
 def test_trim(mock_video: pyclip.Video):
     """Test trimming a video using seconds as unit."""
     video = mock_video.trim(50, 1000)
