@@ -1,4 +1,4 @@
-import src as pyclip
+import pyclip
 
 import pytest
 
