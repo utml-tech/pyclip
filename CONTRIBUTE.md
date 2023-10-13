@@ -1,4 +1,4 @@
-# Best practices before pushing code <br/>
+# Best practices before pushing code
 -- First create a new branch with your issue number/name with git checkout -b "name_of_branch" <br/> 
 -- Check if you have the same code that is there on the main branch with git status <br/>
 -- If there are new changes on the main branch, git pull origin/main <br/>
