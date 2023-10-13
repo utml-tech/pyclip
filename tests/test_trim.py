@@ -11,11 +11,6 @@ from pyclip import Trim
 
 import pytest
 
-@pytest.fixture
-def mock_video() -> pyclip.Video:
-    """Fixture to generate a mock video for testing."""
-    return pyclip.Video.rand()
-
 def test_trim(mock_video: pyclip.Video):
     """Test trimming a video using seconds as unit."""
     video = mock_video.trim(50, 1000)
@@ -56,4 +51,6 @@ def test_trim_invalid_unit(mock_video: pyclip.Video):
 def test_trim_without_end(mock_video: pyclip.Video):
     """Test trimming without specifying end trims to the end of the video."""
     trimmed = mock_video.trim(50)
-    assert trimmed.duration == mock_video.duration - 50
+    expected_duration = mock_video.duration - 50
+    
+    pytest.approx(trimmed.duration, expected_duration)

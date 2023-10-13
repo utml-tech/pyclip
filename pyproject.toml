@@ -8,6 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 pytest = "^7.4.2"
+ipython = "^8.16.1"
+torch = "^2.1.0"
 
 
 [build-system]
