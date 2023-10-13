@@ -1,39 +1,40 @@
 import src as pyclip
-from moviepy.editor import VideoFileClip
 import os
+from .core.video import Video
 
-def check_file_extension(file_path, allowed_extensions):
-    """
-    Assert that a file has one of the specified allowed extensions.
+def crop(self, mock_video: pyclip.Video, left: int, upper: int, right: int, lower: int) -> Video:
 
-    Args:
-    - file_path (str): The path to the file to check.
-    - allowed_extensions (list): A list of allowed file extensions (e.g., ['.gif', '.mp4', '.webm']).
-
-    Raises:
-    - AssertionError: If the file does not have an allowed extension.
-    """
-    assert os.path.isfile(file_path), f"'{file_path}' is not a valid file path."
-
-    # get the file extension (including the dot) from the file path
-    _, file_extension = os.path.splitext(file_path)
-
-    # check if the file extension is in the list of allowed extensions
-    assert file_extension in allowed_extensions, f"'{file_path}' has an invalid file extension."
-
-
-def assert_and_crop_video_dimensions(input_file, output_file, width, height):
-    check_file_extension(input_file, ['.gif', '.mp4', '.webm'])
+    # Check if the input video is opened
+    assert mock_video.isOpened(), f"Unable to open video file: {mock_video.file_path}"
     
-    # Check if the input file is a video file (MP4, GIF, or WebM)
-    _, ext = os.path.splitext(input_file)
-    assert ext in ['.mp4', '.gif', '.webm'], f"'{input_file}' is not a supported video format."
+    # Ensure that left, upper, right, and lower are integers
+    assert isinstance(left, int), "left must be an integer."
+    assert isinstance(upper, int), "upper must be an integer."
+    assert isinstance(right, int), "right must be an integer."
+    assert isinstance(lower, int), "lower must be an integer."
 
-    # Use moviepy to crop video dimensions
-    try:
-        clip = VideoFileClip(input_file)
-        cropped_clip = clip.crop(x1=0, y1=0, x2=width, y2=height)
-        cropped_clip.write_videofile(output_file, codec='libx264')
-        print(f"'{input_file}' cropped to {width}x{height} and saved as '{output_file}'.")
-    except Exception as e:
-        print(f'Error cropping video dimensions: {str(e)}')
+    # get video details
+    frame_width = int(mock_video.getWidth())
+    frame_height = int(mock_video.getHeight())
+
+    # calculate the dimensions of the cropped region
+    new_width = right - left
+    new_height = lower - upper
+
+
+    # make assertions about the crop dimensions
+    assert new_width > 0, "Crop width must be greater than 0."
+    assert new_height > 0, "Crop height must be greater than 0."
+    assert left >= 0, "Left position must be non-negative."
+    assert upper >= 0, "Upper position must be non-negative."
+    assert right <= frame_width, "Right position must be within the video width."
+    assert lower <= frame_height, "Lower position must be within the video height."
+
+
+    output = mock_video.save(crop=[left, upper, right, lower])
+
+    return output
+
+
+
+
