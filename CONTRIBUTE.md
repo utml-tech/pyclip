@@ -1,12 +1,12 @@
-# Best practices before pushing code
--- First create a new branch with your issue number/name with git checkout -b "name_of_branch" 
--- Check if you have the same code that is there on the main branch with git status
--- If there are new changes on the main branch, git pull origin/main
--- Just to make sure you can git reset --hard origin/main
--- Do your changes and save them in a stash using git stash save -m "name_your_stash_if_you_wanna"
--- Do a git fetch --all and git reset --hard origin/main in case someone has made recent changes to the main branch
--- Then use git pop to get your stashed code back
--- Then do a "git add ." which will add all your changes
--- Then use git commit -am "describe your changes" and git push --set-upstream origin branch_name
--- Finally go to the repo and create a PR
--- Get it merged by a reviewer , you're good to go!   
+# Best practices before pushing code <br/>
+-- First create a new branch with your issue number/name with git checkout -b "name_of_branch" <br/> 
+-- Check if you have the same code that is there on the main branch with git status <br/>
+-- If there are new changes on the main branch, git pull origin/main <br/>
+-- Just to make sure you can git reset --hard origin/main <br/>
+-- Do your changes and save them in a stash using git stash save -m "name_your_stash_if_you_wanna" <br/>
+-- Do a git fetch --all and git reset --hard origin/main in case someone has made recent changes to the main branch <br/>
+-- Then use git pop to get your stashed code back <br/>
+-- Then do a "git add ." which will add all your changes <br/>
+-- Then use git commit -am "describe your changes" and git push --set-upstream origin branch_name <br/>
+-- Finally go to the repo and create a PR <br/>
+-- Get it merged by a reviewer , you're good to go! <br/> 
