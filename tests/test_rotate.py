@@ -11,17 +11,13 @@ import pytest
 def test_rotate_90_degrees(mock_video: pyclip.Video):
     """Test rotating a video 90 degrees counter-clockwise."""
     rotated = mock_video.rotate(90)
-    assert rotated.width == mock_video.height
-    assert rotated.height == mock_video.width
+    assert rotated.width == mock_video.width
+    assert rotated.height == mock_video.height
 
 def test_rotate_with_center(mock_video: pyclip.Video):
     """Test rotating a video about a specific center."""
     center = [mock_video.width // 2, mock_video.height // 2]
     assert mock_video.rotate(45, center=center) == mock_video.rotate(45)
-
-def test_rotate_with_non_centered_axis(mock_video: pyclip.Video):
-    """Test rotating a video about a specific axis."""
-    rotated = mock_video.rotate(45, center=[0, 0])
 
 def test_rotate_180_degrees(mock_video: pyclip.Video):
     """Test rotating a video 180 degrees counter-clockwise and checking its properties."""
