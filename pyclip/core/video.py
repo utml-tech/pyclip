@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 class Model:
     pass
 
@@ -22,6 +24,9 @@ class Video(Model):
         ...
 
     def rand(self):
+        ...
+
+    def open(self, path: str | Path):
         ...
 
     def save(self, path: str | Path):

@@ -8,8 +8,10 @@ References:
 from pyclip import Video
 import tempfile
 
-def test_convert_to_mp4(mock_video: Video):
-    with tempfile.NamedTemporaryFile(suffix=".mp4") as f:
-        mock_video.save(f.name)
+import pytest
 
-    assert Video.from_file(f.name) == mock_video
+@pytest.mark.parametrize("file_format", [("mp4"), ("avi")])
+def test_video_conversion(mock_video: Video, file_format: str):
+    with tempfile.NamedTemporaryFile(suffix=f".{file_format}") as f:
+        mock_video.save(f.name, format=file_format.upper())
+        assert Video.open(f.name) == mock_video
