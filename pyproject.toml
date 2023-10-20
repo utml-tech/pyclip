@@ -6,10 +6,12 @@ authors = ["Pedro Valois <vaz.valois@hotmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.10,<3.13"
 pytest = "^7.4.2"
 ipython = "^8.16.1"
 torch = "^2.1.0"
+pydantic = "^2.4.2"
+numpy = "^1.26.1"
 
 
 [build-system]
