@@ -1,5 +1,7 @@
+from typing_extensions import Self
+
 from typing import Any, Union, Optional
-from pydantic import BaseModel, NonNegativeFloat, validator
+from pydantic import BaseModel, NonNegativeFloat, field_validator, model_validator, validator
 from ..utils.enums import TimeUnits
 from ..core import Video
 
@@ -11,50 +13,53 @@ class Trim(BaseModel):
     step: Optional[NonNegativeFloat] = None  # Default step is 1 to get every frame or millisecond.
     unit: TimeUnits = TimeUnits.milliseconds
 
-    @validator("end", pre=True, always=True) 
-    def validate_end_not_before_start(cls, end: Optional[NonNegativeFloat], values: dict) -> Optional[NonNegativeFloat]:
+    @model_validator(mode='after')
+    def validate_end_not_before_start(self) -> Self:
         """Ensures that end is not before start."""
-        if end is not None and "start" in values and end < values["start"]:
+        if self.end is not None and self.end < self.start:
             raise ValueError("End time cannot be before start time.")
-        return end
+        return self
+    
+    def _convert_to_frames(self, video: Video, value: NonNegativeFloat) -> int:
+        """
+        Converts a time in milliseconds or a frame count to a frame count based on the unit.
+
+        Args:
+            video (Video): The video from which frame rate is obtained.
+            value (NonNegativeFloat): The value to be converted.
+
+        Returns:
+            int: The value converted to frames.
+        """
+        return int(value) if self.unit == TimeUnits.frame else int(value * video.fps // 1000)
+
+    def _compute_indices(self, video: Video, start: int, end: Optional[int], step: Optional[int]) -> tuple[tuple[int, Optional[int]], tuple[int, Optional[int]]]:
+        """
+        Computes the starting and ending indices for the video clip and audio segment.
+
+        Args:
+            video (Video): The video from which indices are being computed.
+            start (int): The starting index.
+            end (Optional[int]): The ending index.
+            step (Optional[int]): The step size.
+
+        Returns:
+            Tuple[Tuple[int, Optional[int]], Tuple[int, Optional[int]]]: The video and audio indices.
+        """
+        audio_start = int((start / video.fps) * video.sampling_rate)
+        audio_end = int((end / video.fps) * video.sampling_rate) if end is not None else None
+        return slice(start, end, step), slice(audio_start, audio_end, step)
 
     def __call__(self, video: Video) -> Video:
-        """Trims the video based on the unit specified (frames or milliseconds)."""
-        match self.unit:
-            case TimeUnits.milliseconds:
-                return self._trim_milliseconds(video)
-            case TimeUnits.frame:
-                return self._trim_frames(video)
+        """
+        Trims the video based on the specified unit (frames or milliseconds).
 
-    def _compute_audio_indices(self, video: Video, start_frame: int, end_frame: Optional[int]) -> tuple[int, int]:
-        """Computes the starting and ending indices for the audio segment corresponding to the trimmed video."""
-        audio_start = int((start_frame / video.fps) * video.sampling_rate)
-        audio_end = int((end_frame / video.fps) * video.sampling_rate) if end_frame is not None else None
-        return audio_start, audio_end
+        Args:
+            video (Video): The video to be trimmed.
 
-    def _trim_frames(self, video: Video) -> Video:
-        """Trims the video based on frame indices."""
-        start_frame = int(self.start)
-        end_frame = int(self.end) if self.end is not None else None
-        step = int(self.step) if self.step is not None else None
-
-        new_video = video.clip[start_frame:end_frame:step]
-        audio_start, audio_end = self._compute_audio_indices(video, start_frame, end_frame)
-        
-        new_audio = video.audio[audio_start:audio_end:step]
-
-        return Video(clip=new_video, fps=video.fps, audio=new_audio, sampling_rate=video.sampling_rate)
-
-    def _trim_milliseconds(self, video: Video) -> Video:
-        """Trims the video based on time in milliseconds."""
-        start_frame = int(self.start * video.fps // 1000)
-        end_frame = int(self.end * video.fps // 1000) if self.end is not None else None
-        step = int(self.step * video.fps // 1000) if self.step is not None else None
-        step = None if step and step <= 1 else step
-        
-        new_video = video.clip[start_frame:end_frame:step]
-        audio_start, audio_end = self._compute_audio_indices(video, start_frame, end_frame)
-        
-        new_audio = video.audio[audio_start:audio_end:step]
-
-        return Video(clip=new_video, fps=video.fps, audio=new_audio, sampling_rate=video.sampling_rate)
+        Returns:
+            Video: The trimmed video.
+        """
+        start, end, step = map(lambda x: self._convert_to_frames(video, x) if x is not None else None, (self.start, self.end, self.step))
+        video_slice, audio_slice = self._compute_indices(video, start, end, step)
+        return Video(clip=video.clip[video_slice], fps=video.fps, audio=video.audio[audio_slice], sampling_rate=video.sampling_rate)

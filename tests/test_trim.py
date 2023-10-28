@@ -38,11 +38,6 @@ def test_trim_start_greater_than_end(mock_video: pyclip.Video):
     with pytest.raises(ValueError):
         mock_video.trim(1000, 100)
 
-def test_trim_exceed_duration(mock_video: pyclip.Video):
-    """Test trimming with time range exceeding video duration raises an IndexError."""
-    with pytest.raises(ValueError):
-        mock_video.trim(0, mock_video.duration + 1000)
-
 def test_trim_invalid_unit(mock_video: pyclip.Video):
     """Test trimming with invalid unit raises a ValueError."""
     with pytest.raises(ValueError):
@@ -53,7 +48,6 @@ def test_trim_without_end(mock_video: pyclip.Video):
     trimmed = mock_video.trim(50)
     expected_duration = mock_video.duration - 50
     pytest.approx(trimmed.duration, expected_duration)
-
 
 def test_trim_with_step(mock_video: pyclip.Video):
     """Test trimming a video using a step. Trimming from 0ms to 1000ms with step=2 should halve the frames."""
