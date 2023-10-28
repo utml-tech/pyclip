@@ -20,7 +20,7 @@ class Trim(BaseModel):
             raise ValueError("End time cannot be before start time.")
         return self
     
-    def _convert_to_frames(self, video: Video, value: NonNegativeFloat) -> int:
+    def _convert_to_frames(self, video: Video, value: int | None) -> int | None:
         """
         Converts a time in milliseconds or a frame count to a frame count based on the unit.
 
@@ -31,7 +31,8 @@ class Trim(BaseModel):
         Returns:
             int: The value converted to frames.
         """
-        return int(value) if self.unit == TimeUnits.frame else int(value * video.fps // 1000)
+        if value is not None:
+            return int(value) if self.unit == TimeUnits.frame else int(value * video.fps // 1000)
 
     def _compute_indices(self, video: Video, start: int, end: Optional[int], step: Optional[int]) -> tuple[tuple[int, Optional[int]], tuple[int, Optional[int]]]:
         """
@@ -60,6 +61,6 @@ class Trim(BaseModel):
         Returns:
             Video: The trimmed video.
         """
-        start, end, step = map(lambda x: self._convert_to_frames(video, x) if x is not None else None, (self.start, self.end, self.step))
+        start, end, step = map(lambda x: self._convert_to_frames(video, x), (self.start, self.end, self.step))
         video_slice, audio_slice = self._compute_indices(video, start, end, step)
         return Video(clip=video.clip[video_slice], fps=video.fps, audio=video.audio[audio_slice], sampling_rate=video.sampling_rate)
